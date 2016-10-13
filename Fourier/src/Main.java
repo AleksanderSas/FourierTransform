@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -11,6 +12,7 @@ public class Main {
 	private static int width = 1200;
 	private static int height = 700;
 	private static GraphPanel graphPanel = null;
+	private static SpectrogrmPanel spectrogrmPanel = null;
 	public static double T = 2;
 	public static void main(String args[])
 	{	
@@ -24,9 +26,12 @@ public class Main {
 		//FourierSeries F = new FourierSeries(x -> Math.cos(x), 5, Math.PI * 2);
 		
 		graphPanel = new GraphPanel(F, f, T);
+		spectrogrmPanel = new SpectrogrmPanel(F);
+		spectrogrmPanel.setPreferredSize(new Dimension(graphPanel.getWidth(), 150));
 		frame.setLayout(new BorderLayout());
 		frame.add(graphPanel, BorderLayout.CENTER);
-		frame.add(new ControlPanel(graphPanel), BorderLayout.NORTH);
+		frame.add(new ControlPanel(graphPanel, spectrogrmPanel), BorderLayout.NORTH);
+		frame.add(spectrogrmPanel, BorderLayout.SOUTH);
 		frame.setVisible(true);
 	}
 }

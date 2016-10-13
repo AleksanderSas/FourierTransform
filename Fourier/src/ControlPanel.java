@@ -21,7 +21,7 @@ public class ControlPanel extends JPanel
 	private JSpinner componentSelector;
 	private JButton cleanButton;
 	
-	public ControlPanel(final GraphPanel graphPanel)
+	public ControlPanel(final GraphPanel graphPanel, final SpectrogrmPanel spectrogrmPanel)
 	{
 		drawButton = new JButton("Rysuj");
 		cleanButton = new JButton("wyczyœæ");
@@ -39,7 +39,8 @@ public class ControlPanel extends JPanel
 			
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				graphPanel.paintGraph((int)componentSelector.getValue());			
+				graphPanel.paintGraph((int)componentSelector.getValue());	
+				spectrogrmPanel.paintGraph((int)componentSelector.getValue());
 			}
 		});
 		
@@ -48,8 +49,11 @@ public class ControlPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Function f = new FunctionCreator(graphPanel.getNockPoints());
-				graphPanel.drawFunction(f,new FourierSeries(f, 2));
+				FourierSeries fourierSeries = new FourierSeries(f, 2);
+				graphPanel.drawFunction(f, fourierSeries);
 				graphPanel.paintGraph((int)componentSelector.getValue());
+				spectrogrmPanel.setFourierSeries(fourierSeries);
+				spectrogrmPanel.paintGraph((int)componentSelector.getValue());
 			}
 		});
 		
@@ -57,6 +61,7 @@ public class ControlPanel extends JPanel
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				graphPanel.cleanNockPoints();
+				spectrogrmPanel.clean();
 			}
 		});
 	}

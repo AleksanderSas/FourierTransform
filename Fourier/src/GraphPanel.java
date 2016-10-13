@@ -13,7 +13,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 	private static final long serialVersionUID = 1L;
 	FourierSeries fourierSeries;
 	Function f = null;
-	double max_x = 4;
+	double max_x = 2;
 	int max_y = 2;
 	int n = 0;
 	ArrayList<Pair<Double>> nockPoints;
@@ -27,23 +27,10 @@ public class GraphPanel extends JPanel implements MouseListener{
 		max_x = T;
 	}
 	
-	private double drawComponent(Pair<Double> c, double x, int i)
-	{
-		double T = fourierSeries.get_T();
-		return c.a * Math.cos(2 * Math.PI / T * i * x) + c.b * Math.sin(2 * Math.PI / T * i * x);
-	}
-	
-	private double drawComponent(double x)
-	{
-		double sum = 0;
-		for(int i = 1; i <= n; i++)
-			sum += drawComponent(fourierSeries.getCoefficient(i), x, i);
-		return sum + fourierSeries.get_a_0() / 2;
-	}
-	
 	private void drawComponent(Graphics g)
 	{
-		drawGrapf(g, x -> drawComponent(x));
+		if(fourierSeries != null)
+			drawGrapf(g, x -> fourierSeries.draw(x, n));
 	}
 	
 	private void drawGrapf(Graphics g, Function f)
@@ -92,6 +79,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 	{
 		super.paintComponent(g);
 		
+		//draw background (axes)
 		int width = getWidth();
 		int height = getHeight();
 		Graphics2D g2 = (Graphics2D)g;
@@ -102,8 +90,7 @@ public class GraphPanel extends JPanel implements MouseListener{
 		
 		g2.setStroke(new BasicStroke(1));
 		
-		if(fourierSeries != null)
-			drawComponent(g);
+		drawComponent(g);
 		
 		g2.setColor(Color.RED);
 		g2.setStroke(new BasicStroke(2));
