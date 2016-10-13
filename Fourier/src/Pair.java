@@ -1,11 +1,11 @@
 
-public class Pair {
+public class Pair<T> {
 	
-	public Pair(double a, double b) {
+	public Pair(T a, T b) {
 		super();
 		this.a = a;
 		this.b = b;
 	}
+	public T a, b;
 
-	public double a, b;
 }

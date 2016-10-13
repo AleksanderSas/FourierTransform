@@ -2,24 +2,32 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+
 import javax.swing.JPanel;
 
-public class GraphPanel extends JPanel{
+public class GraphPanel extends JPanel implements MouseListener{
 	
 	private static final long serialVersionUID = 1L;
 	FourierSeries fourierSeries;
 	Function f = null;
-	int max_x = 4;
+	double max_x = 4;
 	int max_y = 2;
 	int n = 0;
+	ArrayList<Pair<Double>> nockPoints;
 	
-	public GraphPanel(FourierSeries fourierSeries, Function f)
+	public GraphPanel(FourierSeries fourierSeries, Function f, double T)
 	{
 		this.fourierSeries = fourierSeries;
 		this.f = f;
+		nockPoints = new ArrayList<>();
+		addMouseListener(this);
+		max_x = T;
 	}
 	
-	private double drawComponent(Pair c, double x, int i)
+	private double drawComponent(Pair<Double> c, double x, int i)
 	{
 		double T = fourierSeries.get_T();
 		return c.a * Math.cos(2 * Math.PI / T * i * x) + c.b * Math.sin(2 * Math.PI / T * i * x);
@@ -64,14 +72,14 @@ public class GraphPanel extends JPanel{
 	
 	private void drawScale(Graphics2D g2, int n)
 	{
-		int x = getWidth() / 2 / max_x * (n + max_x);
+		int x = (int)(getWidth() / 2 / max_x * (n + max_x));
 		g2.drawLine(x, getHeight() / 2 - 10, x, getHeight() / 2 + 10);
 		g2.drawString("" + n, x,getHeight() / 2 + 30);
 	}
 	
 	private void drawScale(Graphics2D g2)
 	{
-		for(int i = -max_x; i <= max_x; i++)
+		for(int i = -(int)max_x; i <= max_x; i++)
 		{
 			if(i == 0 || i == -max_x || i == max_x)
 				continue;
@@ -94,10 +102,107 @@ public class GraphPanel extends JPanel{
 		
 		g2.setStroke(new BasicStroke(1));
 		
-		drawComponent(g);
+		if(fourierSeries != null)
+			drawComponent(g);
 		
 		g2.setColor(Color.RED);
 		g2.setStroke(new BasicStroke(2));
-		drawGrapf(g, f);	
+		for(Pair<Double> p: nockPoints)
+		{
+			g2.fillOval(coordinateX(p.a) - 5, coordinateY(p.b) - 5, 10, 10);
+			g2.fillOval(coordinateX(p.a) - 5 - getWidth() / 2, coordinateY(p.b) - 5, 10, 10);
+		}
+		if(f != null)
+			drawGrapf(g, f);	
+	}
+	
+	public void cleanNockPoints()
+	{
+		nockPoints.clear();
+		f = null;
+		fourierSeries = null;
+		repaint();
+	}
+	
+	public void drawFunction(Function f, FourierSeries F)
+	{
+		this.f = f;
+		this.fourierSeries = F;
+		repaint();
+	}
+	
+	public ArrayList<Pair<Double>> getNockPoints()
+	{
+		return nockPoints;
+	}
+	
+	double scaleX(int x)
+	{
+		return (1.0 * x / getWidth() - 0.5) * max_x * 2;
+	}
+	
+	int coordinateX(double x)
+	{
+		return (int)((x / max_x + 1.0) / 2 * getWidth());
+	}
+	
+	int coordinateY(double y)
+	{
+		return (int)((y / max_y + 1.0) / 2 * getHeight());
+	}
+	
+	double scaleY(int y)
+	{
+		return (1.0 * y / getHeight() - 0.5) * max_y * 2;
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int x_int = e.getX();
+		if(x_int < getWidth() / 2)
+			x_int += getWidth() / 2;
+		if(e.getButton() == MouseEvent.BUTTON1)
+		{
+			nockPoints.add(new Pair<Double>(scaleX(x_int), scaleY(e.getY())));
+		}
+		if(e.getButton() == MouseEvent.BUTTON3)
+		{
+			for(Pair<Double> p : nockPoints)
+			{
+				double x = scaleX(x_int);
+				double y = scaleY(e.getY());
+				double dist = (p.a - x) * (p.a - x) + (p.b - y) * (p.b - y);
+				if(dist < 0.008)
+				{
+					nockPoints.remove(p);
+					break;
+				}
+			}
+		}
+		repaint();
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

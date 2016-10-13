@@ -8,7 +8,7 @@ public class FourierSeries
 	private double T;
 	private Function f;
 	
-	public FourierSeries(Function f, int n, double T)
+	public FourierSeries(Function f, double T)
 	{
 		this.T = T;
 		this.f = f;
