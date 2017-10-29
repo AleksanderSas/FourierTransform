@@ -21,6 +21,8 @@ public class FunctionCreator implements Function
 	@Override
 	public double f(double x) {
 		
+		if(nockPOints.size() == 0)
+			return 0;
 		while(x > T)
 			x -= T;
 		while(x < 0)

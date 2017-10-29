@@ -30,7 +30,10 @@ public class Main {
 		spectrogrmPanel.setPreferredSize(new Dimension(graphPanel.getWidth(), 150));
 		frame.setLayout(new BorderLayout());
 		frame.add(graphPanel, BorderLayout.CENTER);
-		frame.add(new ControlPanel(graphPanel, spectrogrmPanel), BorderLayout.NORTH);
+		FunctionEncapsulator functionEncapsulator = new FunctionEncapsulator();
+		functionEncapsulator.fourierSeries = F;
+		functionEncapsulator.f = f;
+		frame.add(new ControlPanel(graphPanel, spectrogrmPanel, functionEncapsulator), BorderLayout.NORTH);
 		frame.add(spectrogrmPanel, BorderLayout.SOUTH);
 		frame.setVisible(true);
 	}
