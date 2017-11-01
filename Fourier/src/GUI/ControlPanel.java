@@ -1,3 +1,4 @@
+package GUI;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -17,6 +18,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import FourierMath.FourierSeries;
+import FourierMath.Function;
+import FourierMath.Function1;
+import FourierMath.Function2;
+import FourierMath.FunctionCreator;
+import FourierMath.FunctionEncapsulator;
+
 public class ControlPanel extends JPanel
 {
 	private JButton drawButton;
@@ -30,7 +38,11 @@ public class ControlPanel extends JPanel
 		drawButton = new JButton("Rysuj");
 		cleanButton = new JButton("wyczyœæ");
 		userFunction = new ComboBoxObject("w³asna", x -> 0);
-		ComboBoxObject[] functions = {new ComboBoxObject("Prostok¹t", new Function1()), new ComboBoxObject("Pi³a" ,new Function2()), userFunction};
+		ComboBoxObject[] functions = {
+				new ComboBoxObject("Prostok¹t", new Function1()), 
+				new ComboBoxObject("Pi³a" ,new Function2()), 
+				userFunction
+			};
 		FSelector = new JComboBox<ComboBoxObject>(functions);
 		drawGraphCheckBox = new JCheckBox("Rysuj wykres", true);
 		drawButton.setPreferredSize(new Dimension(100, 30));

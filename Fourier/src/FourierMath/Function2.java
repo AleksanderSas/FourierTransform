@@ -1,3 +1,4 @@
+package FourierMath;
 
 public class Function2 implements Function{
 

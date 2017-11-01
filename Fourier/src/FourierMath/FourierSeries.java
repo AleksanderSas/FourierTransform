@@ -1,3 +1,4 @@
+package FourierMath;
 import java.util.ArrayList;
 
 public class FourierSeries 

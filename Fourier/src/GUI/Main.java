@@ -1,3 +1,4 @@
+package GUI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -6,6 +7,11 @@ import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+
+import FourierMath.FourierSeries;
+import FourierMath.Function;
+import FourierMath.Function1;
+import FourierMath.FunctionEncapsulator;
 
 public class Main {
 	
@@ -23,16 +29,13 @@ public class Main {
 		
 		Function f = new Function1();
 		FourierSeries F = new FourierSeries(f, T);
-		//FourierSeries F = new FourierSeries(x -> Math.cos(x), 5, Math.PI * 2);
 		
 		graphPanel = new GraphPanel(F, f, T);
 		spectrogrmPanel = new SpectrogrmPanel(F);
 		spectrogrmPanel.setPreferredSize(new Dimension(graphPanel.getWidth(), 150));
 		frame.setLayout(new BorderLayout());
 		frame.add(graphPanel, BorderLayout.CENTER);
-		FunctionEncapsulator functionEncapsulator = new FunctionEncapsulator();
-		functionEncapsulator.fourierSeries = F;
-		functionEncapsulator.f = f;
+		FunctionEncapsulator functionEncapsulator = new FunctionEncapsulator(F, f);
 		frame.add(new ControlPanel(graphPanel, spectrogrmPanel, functionEncapsulator), BorderLayout.NORTH);
 		frame.add(spectrogrmPanel, BorderLayout.SOUTH);
 		frame.setVisible(true);

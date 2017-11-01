@@ -1,9 +1,2 @@
-/ControlPanel$1.class
-/ControlPanel.class
-/FourierSeries.class
-/Function.class
-/Function1.class
-/GraphPanel.class
-/GraphPanel2.class
-/Main.class
-/Pair.class
+/GUI/
+/FourierMath/

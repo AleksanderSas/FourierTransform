@@ -1,7 +1,10 @@
+package GUI;
 import java.awt.Color;
 import java.awt.Graphics;
 
 import javax.swing.JPanel;
+
+import FourierMath.FourierSeries;
 
 public class SpectrogrmPanel extends JPanel{
 
