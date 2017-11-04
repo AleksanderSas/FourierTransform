@@ -31,23 +31,25 @@ public class ControlPanel extends JPanel
 	private JSpinner componentSelector;
 	private JButton cleanButton;
 	private JCheckBox drawGraphCheckBox;
-	private JComboBox<ComboBoxObject> FSelector;
-	private ComboBoxObject userFunction;
+	private JComboBox<FunctionEncapsulator> FSelector;
+	private FunctionEncapsulator userFunction;
+	FunctionEncapsulator currentFunction;
 	public ControlPanel(final GraphPanel graphPanel, final SpectrogrmPanel spectrogrmPanel, FunctionEncapsulator functionEncapsulator)
 	{
 		drawButton = new JButton("Rysuj");
 		cleanButton = new JButton("wyczyœæ");
-		userFunction = new ComboBoxObject("w³asna", x -> 0);
-		ComboBoxObject[] functions = {
-				new ComboBoxObject("Prostok¹t", new Function1()), 
-				new ComboBoxObject("Pi³a" ,new Function2()), 
+		userFunction = new FunctionEncapsulator("w³asna", graphPanel.functionCreator, true, true);
+		FunctionEncapsulator[] functions = {
+				new FunctionEncapsulator("Prostok¹t", new Function1(), true, false), 
+				new FunctionEncapsulator("Pi³a" ,new Function2(), true, false), 
 				userFunction
 			};
-		FSelector = new JComboBox<ComboBoxObject>(functions);
+		currentFunction = functionEncapsulator;
+		FSelector = new JComboBox<FunctionEncapsulator>(functions);
 		drawGraphCheckBox = new JCheckBox("Rysuj wykres", true);
 		drawButton.setPreferredSize(new Dimension(100, 30));
 		cleanButton.setPreferredSize(new Dimension(100, 30));
-		componentSelector = new JSpinner(new SpinnerNumberModel());
+		componentSelector = new JSpinner(new SpinnerNumberModel(1, 1, 500, 1));
 		componentSelector.setPreferredSize(new Dimension(200, 30));
 		
 		setLayout(new FlowLayout());
@@ -61,16 +63,7 @@ public class ControlPanel extends JPanel
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				graphPanel.cleanNockPoints();
-				spectrogrmPanel.clean();
-				Function f = ((ComboBoxObject)FSelector.getSelectedItem()).f;
-				functionEncapsulator.fourierSeries = new FourierSeries(f, 2);
-				functionEncapsulator.f = f;
-				boolean draw = drawGraphCheckBox.isSelected();
-				graphPanel.drawFunction(draw? functionEncapsulator.f : null, functionEncapsulator.fourierSeries);
-				graphPanel.paintGraph((int)componentSelector.getValue());
-				spectrogrmPanel.setFourierSeries(functionEncapsulator.fourierSeries);
-				spectrogrmPanel.paintGraph((int)componentSelector.getValue());
+				setFunction(spectrogrmPanel, graphPanel);
 			}
 		});
 		
@@ -78,8 +71,8 @@ public class ControlPanel extends JPanel
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				boolean draw = ((JCheckBox)e.getSource()).isSelected();
-				graphPanel.drawFunction(draw? functionEncapsulator.f : null, functionEncapsulator.fourierSeries);
+				currentFunction.drawFunction = ((JCheckBox)e.getSource()).isSelected();
+				graphPanel.drawFunction(currentFunction, (int)componentSelector.getValue());
 			}
 		});
 		
@@ -87,8 +80,9 @@ public class ControlPanel extends JPanel
 			
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				graphPanel.paintGraph((int)componentSelector.getValue());	
-				spectrogrmPanel.paintGraph((int)componentSelector.getValue());
+				setFunction(spectrogrmPanel, graphPanel);
+				//graphPanel.paintGraph((int)componentSelector.getValue());	
+				//spectrogrmPanel.paintGraph((int)componentSelector.getValue());
 			}
 		});
 		
@@ -96,14 +90,9 @@ public class ControlPanel extends JPanel
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Function f = new FunctionCreator(graphPanel.getNockPoints());
-				userFunction.f = f;
-				functionEncapsulator.fourierSeries = new FourierSeries(f, 2);
-				functionEncapsulator.f = f;
-				boolean draw = drawGraphCheckBox.isSelected();
-				graphPanel.drawFunction(draw? functionEncapsulator.f : null, functionEncapsulator.fourierSeries);
-				graphPanel.paintGraph((int)componentSelector.getValue());
-				spectrogrmPanel.setFourierSeries(functionEncapsulator.fourierSeries);
+				currentFunction.fourierSeries = new FourierSeries(currentFunction.f, 2);
+				graphPanel.drawFunction(currentFunction, (int)componentSelector.getValue());
+				spectrogrmPanel.setFourierSeries(currentFunction.fourierSeries);
 				spectrogrmPanel.paintGraph((int)componentSelector.getValue());
 			}
 		});
@@ -117,19 +106,13 @@ public class ControlPanel extends JPanel
 		});
 	}
 	
-	private class ComboBoxObject{
-		
-		public ComboBoxObject(String name, Function f){
-			this.name = name;
-			this.f = f;
-		}
-		
-		private String name;
-		public Function f;
-		
-		@Override
-		public String toString(){
-			return name;
-		}
+	private void setFunction(SpectrogrmPanel spectrogrmPanel, GraphPanel graphPanel)
+	{
+		spectrogrmPanel.clean();
+		currentFunction = ((FunctionEncapsulator)FSelector.getSelectedItem());
+		currentFunction.drawFunction = drawGraphCheckBox.isSelected();
+		graphPanel.drawFunction(currentFunction, (int)componentSelector.getValue());
+		spectrogrmPanel.setFourierSeries(currentFunction.fourierSeries);
+		spectrogrmPanel.paintGraph((int)componentSelector.getValue());
 	}
 }

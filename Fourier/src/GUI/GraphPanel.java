@@ -13,45 +13,48 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-import FourierMath.FourierSeries;
 import FourierMath.Function;
+import FourierMath.FunctionCreator;
+import FourierMath.FunctionEncapsulator;
 import FourierMath.Pair;
 public class GraphPanel extends JPanel implements MouseListener, MouseMotionListener{
 	
 	private static final long serialVersionUID = 1L;
-	FourierSeries fourierSeries;
-	Function f = null;
+	FunctionEncapsulator encapsulator;
 	double max_x = 2;
 	int max_y = 2;
 	int n = 0;
 	ArrayList<Pair<Double>> nockPoints;
-	private int selectedNockPointIdx = -1;
+	private Pair<Double> selectedNockPoint = null;
 	private double selectionX = 0.0;
 	private double selectionY = 0.0;
 	private double selectionXbase = 0.0;
 	private double selectionYbase = 0.0;
+	public FunctionCreator functionCreator;
 	
-	public GraphPanel(FourierSeries fourierSeries, Function f, double T)
+	public GraphPanel(FunctionEncapsulator encapsulator)
 	{
-		this.fourierSeries = fourierSeries;
-		this.f = f;
+		this.encapsulator = encapsulator;
+		//this.fourierSeries = fourierSeries;
+		//this.f = f;
 		nockPoints = new ArrayList<>();
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		max_x = T;
+		max_x = Main.T;
+		functionCreator = new FunctionCreator(nockPoints);
 	}
 	
 	private void drawComponent(Graphics g)
 	{
-		if(fourierSeries != null)
-			drawGrapf(g, x -> fourierSeries.draw(x, n));
+		if(encapsulator.fourierSeries != null)
+			drawGrapf(g, x -> encapsulator.fourierSeries.draw(x, n));
 	}
 	
 	private void drawGrapf(Graphics g, Function f)
 	{
 		double x = 0;
 		double y_scale = getHeight()/ 4;
-		double step = 2 * getWidth() / 2000;
+		double step = 2.0 * getWidth() / 1500;
 		double x_local = -max_x;
 		double y_prev = -f.f(x_local)* y_scale + getHeight() / 2;
 		while(x < getWidth())
@@ -63,12 +66,6 @@ public class GraphPanel extends JPanel implements MouseListener, MouseMotionList
 			y_prev = y;
 		}
 		setBackground(Color.WHITE);
-	}
-	
-	public void paintGraph(int n)
-	{
-		this.n = n;
-		this.repaint();
 	}
 	
 	private void drawScale(Graphics2D g2, int n)
@@ -128,28 +125,29 @@ public class GraphPanel extends JPanel implements MouseListener, MouseMotionList
 		g2.setStroke(new BasicStroke(1));		
 		g2.setColor(Color.RED);
 		g2.setStroke(new BasicStroke(2));
-		for(Pair<Double> p: nockPoints)
+		if(encapsulator.drawNockPoints)
 		{
-			g2.fillOval(coordinateX(p.a) - 5, coordinateY(p.b) - 5, 10, 10);
-			g2.fillOval(coordinateX(p.a) - 5 - getWidth() / 2, coordinateY(p.b) - 5, 10, 10);
+			for(Pair<Double> p: nockPoints)
+			{
+				g2.fillOval(coordinateX(p.a) - 5, coordinateY(p.b) - 5, 10, 10);
+				g2.fillOval(coordinateX(p.a) - 5 - getWidth() / 2, coordinateY(p.b) - 5, 10, 10);
+			}
 		}
 		//draw base function
-		if(f != null)
-			drawGrapf(g, f);	
+		if(encapsulator.drawFunction)
+			drawGrapf(g, encapsulator.f);	
 	}
 	
 	public void cleanNockPoints()
 	{
 		nockPoints.clear();
-		f = null;
-		fourierSeries = null;
 		repaint();
 	}
 	
-	public void drawFunction(Function f, FourierSeries F)
+	public void drawFunction(FunctionEncapsulator encapsulator, int n)
 	{
-		this.f = f;
-		this.fourierSeries = F;
+		this.n = n;
+		this.encapsulator = encapsulator;
 		repaint();
 	}
 	
@@ -180,15 +178,14 @@ public class GraphPanel extends JPanel implements MouseListener, MouseMotionList
 		return (1.0 * y / getHeight() - 0.5) * max_y * 2;
 	}
 	
-	private int getKnockPointIdx(double x, double y, boolean createIfnotExists)
+	private Pair<Double> getKnockPointIdx(double x, double y, boolean createIfnotExists)
 	{
-		for(int i = 0; i < nockPoints.size(); i++)
+		for(Pair<Double> p : nockPoints)
 		{
-			Pair<Double> p = nockPoints.get(i);
 			double dist = (p.a - x) * (p.a - x) + (p.b - y) * (p.b - y);
 			if(dist < 0.008)
 			{
-				return i;
+				return p;
 			}
 		}
 		if(createIfnotExists)
@@ -196,10 +193,12 @@ public class GraphPanel extends JPanel implements MouseListener, MouseMotionList
 			while(x < 0){
 				x += 2;
 			}
-			nockPoints.add(new Pair<Double>(x, y));
-			return nockPoints.size() - 1;
+			Pair<Double> p = new Pair<Double>(x, y); 
+			nockPoints.add(p);
+			//encapsulator.fourierSeries.RecomputCoefficents();
+			return new Pair<Double>(x, y);
 		}
-		return -1;
+		return null;
 	}
 
 	@Override
@@ -216,43 +215,47 @@ public class GraphPanel extends JPanel implements MouseListener, MouseMotionList
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if(!encapsulator.drawNockPoints)
+			return;
 		int x_int = e.getX();
 		if(e.getButton() == MouseEvent.BUTTON1)
 		{
 			selectionX = scaleX(x_int);
 			selectionY = scaleY(e.getY());
-			selectedNockPointIdx = getKnockPointIdx(selectionX, selectionY, true);
-			selectionXbase = nockPoints.get(selectedNockPointIdx).a;
-			selectionYbase = nockPoints.get(selectedNockPointIdx).b;
+			selectedNockPoint = getKnockPointIdx(selectionX, selectionY, true);
+			selectionXbase = selectedNockPoint.a;
+			selectionYbase = selectedNockPoint.b;
 		}
 		if(e.getButton() == MouseEvent.BUTTON3)
 		{
 			double x = scaleX(x_int);
 			double y = scaleY(e.getY());
-			int idx = -1;
-			if((idx = getKnockPointIdx(x, y, false)) >= 0)
+			Pair<Double> p = null;
+			if((p = getKnockPointIdx(x, y, false)) != null)
 			{
-				nockPoints.remove(idx);					
+				nockPoints.remove(p);					
 			}
 		}
-		repaint();
-		System.out.println("HHHH");
-		
+		functionCreator.updateNockPoints();
+		repaint();		
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		selectedNockPointIdx = -1;
+		selectedNockPoint = null;
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(selectedNockPointIdx != -1)
+		if(!encapsulator.drawNockPoints)
+			return;
+		if(selectedNockPoint != null)
 		{
 			double x = scaleX(e.getX());
 			double y = scaleY(e.getY());
-			nockPoints.get(selectedNockPointIdx).a = selectionXbase + x - selectionX;
-			nockPoints.get(selectedNockPointIdx).b = selectionYbase + y - selectionY;
+			selectedNockPoint.a = selectionXbase + x - selectionX;
+			selectedNockPoint.b = selectionYbase + y - selectionY;
+			functionCreator.updateNockPoints();
 			repaint();
 		}
 	}

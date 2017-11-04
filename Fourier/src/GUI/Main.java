@@ -28,15 +28,14 @@ public class Main {
 		frame.setTitle("Transformata Fouriera");
 		
 		Function f = new Function1();
-		FourierSeries F = new FourierSeries(f, T);
+		FunctionEncapsulator encapsulator = new FunctionEncapsulator("", f, true, false);
 		
-		graphPanel = new GraphPanel(F, f, T);
-		spectrogrmPanel = new SpectrogrmPanel(F);
+		graphPanel = new GraphPanel(encapsulator);
+		spectrogrmPanel = new SpectrogrmPanel(encapsulator.fourierSeries);
 		spectrogrmPanel.setPreferredSize(new Dimension(graphPanel.getWidth(), 150));
 		frame.setLayout(new BorderLayout());
 		frame.add(graphPanel, BorderLayout.CENTER);
-		FunctionEncapsulator functionEncapsulator = new FunctionEncapsulator(F, f);
-		frame.add(new ControlPanel(graphPanel, spectrogrmPanel, functionEncapsulator), BorderLayout.NORTH);
+		frame.add(new ControlPanel(graphPanel, spectrogrmPanel, encapsulator), BorderLayout.NORTH);
 		frame.add(spectrogrmPanel, BorderLayout.SOUTH);
 		frame.setVisible(true);
 	}

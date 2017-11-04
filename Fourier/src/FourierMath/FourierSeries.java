@@ -19,15 +19,21 @@ public class FourierSeries
 	
 	private Pair<Double> computeCoefficient(final int n)
 	{
-		double a = integrate2(x -> f.f(x) * Math.cos(2 * Math.PI / T * n * x), -T/2, T/2) * 2 / T;
-		double b = integrate2(x -> f.f(x) * Math.sin(2 * Math.PI / T * n * x), -T/2, T/2) * 2 / T;
-		return new Pair<Double>(a, b);
+		Pair<Double> p = new Pair<Double>(0.0, 0.0);
+		computeCoefficient(n, p);
+		return p;
+	}
+	
+	private void computeCoefficient(final int n, Pair<Double> coeficent)
+	{
+		coeficent.a = integrate2(x -> f.f(x) * Math.cos(2 * Math.PI / T * n * x), -T/2, T/2) * 2 / T;
+		coeficent.b = integrate2(x -> f.f(x) * Math.sin(2 * Math.PI / T * n * x), -T/2, T/2) * 2 / T;
 	}
 	
 	private double integrate(Function f, double from, double to)
 	{
 		double sum = 0;
-		double step = (to - from) / 10000;
+		double step = (to - from) / 3000;
 		while(from < to)
 		{
 			sum += f.f(from) * step;
@@ -40,7 +46,7 @@ public class FourierSeries
 	private double integrate2(Function f, double from, double to)
 	{
 		double sum = 0;
-		int N = 10000;
+		int N = 3000;
 		double step = (to - from) / N;
 		sum += f.f(from);
 		sum += f.f(to);
@@ -53,6 +59,15 @@ public class FourierSeries
 			from += step;
 		}
 		return sum * step / 3;
+	}
+	
+	public void RecomputCoefficents()
+	{
+		a_0 = integrate2(f, -T/2, T/2) * 2 / T;
+		for(int i  = 0; i < n; i++)
+		{
+			computeCoefficient(i+1,coefficients.get(i));
+		}
 	}
 	
 	public Pair<Double> getCoefficient(int _n)

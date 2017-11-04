@@ -10,7 +10,11 @@ public class FunctionCreator implements Function
 	
 	public FunctionCreator(List<Pair<Double>> nockPOints)
 	{
-		this.nockPOints = nockPOints.stream().sorted((x , y) -> x.a.compareTo(y.a)).collect(Collectors.toList());
+		this.nockPOints = nockPOints;//.stream().sorted((x , y) -> x.a.compareTo(y.a)).collect(Collectors.toList());
+	}
+	
+	public void updateNockPoints(){
+		nockPOints.sort((x , y) -> x.a.compareTo(y.a));
 	}
 	
 	private double approx(double x, Pair<Double> n1, Pair<Double> n2)
