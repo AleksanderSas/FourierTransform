@@ -183,7 +183,7 @@ public class GraphPanel extends JPanel implements MouseListener, MouseMotionList
 		for(Pair<Double> p : nockPoints)
 		{
 			double dist = (p.a - x) * (p.a - x) + (p.b - y) * (p.b - y);
-			if(dist < 0.008)
+			if(dist < 0.001)
 			{
 				return p;
 			}

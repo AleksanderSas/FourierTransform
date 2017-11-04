@@ -22,6 +22,8 @@ import FourierMath.FourierSeries;
 import FourierMath.Function;
 import FourierMath.Function1;
 import FourierMath.Function2;
+import FourierMath.Function3;
+import FourierMath.Function4;
 import FourierMath.FunctionCreator;
 import FourierMath.FunctionEncapsulator;
 
@@ -41,7 +43,9 @@ public class ControlPanel extends JPanel
 		userFunction = new FunctionEncapsulator("w³asna", graphPanel.functionCreator, true, true);
 		FunctionEncapsulator[] functions = {
 				new FunctionEncapsulator("Prostok¹t", new Function1(), true, false), 
-				new FunctionEncapsulator("Pi³a" ,new Function2(), true, false), 
+				new FunctionEncapsulator("Pi³a" ,new Function2(), true, false),
+				new FunctionEncapsulator("pó³-ósemka" ,new Function3(), true, false),
+				new FunctionEncapsulator("pó³-okr¹g" ,new Function4(), true, false),
 				userFunction
 			};
 		currentFunction = functionEncapsulator;

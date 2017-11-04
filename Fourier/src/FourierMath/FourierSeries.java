@@ -61,6 +61,7 @@ public class FourierSeries
 		return sum * step / 3;
 	}
 	
+	//something is no yes
 	public void RecomputCoefficents()
 	{
 		a_0 = integrate2(f, -T/2, T/2) * 2 / T;
