@@ -85,8 +85,6 @@ public class ControlPanel extends JPanel
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
 				setFunction(spectrogrmPanel, graphPanel);
-				//graphPanel.paintGraph((int)componentSelector.getValue());	
-				//spectrogrmPanel.paintGraph((int)componentSelector.getValue());
 			}
 		});
 		
