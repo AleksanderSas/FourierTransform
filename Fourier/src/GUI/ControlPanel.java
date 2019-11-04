@@ -94,10 +94,7 @@ public class ControlPanel extends JPanel
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				currentFunction.fourierSeries = new FourierSeries(currentFunction.f, 2);
-				graphPanel.drawFunction(currentFunction, (int)componentSelector.getValue());
-				spectrogrmPanel.setFourierSeries(currentFunction.fourierSeries);
-				spectrogrmPanel.paintGraph((int)componentSelector.getValue());
+				drawSelectedFunction(spectrogrmPanel, graphPanel);
 			}
 		});
 		
@@ -114,7 +111,14 @@ public class ControlPanel extends JPanel
 	{
 		spectrogrmPanel.clean();
 		currentFunction = ((FunctionEncapsulator)FSelector.getSelectedItem());
-		currentFunction.drawFunction = drawGraphCheckBox.isSelected();
+		currentFunction.drawFunction = drawGraphCheckBox.isSelected();		
+
+		drawSelectedFunction(spectrogrmPanel, graphPanel);
+	}
+	
+	private void drawSelectedFunction(SpectrogrmPanel spectrogrmPanel, GraphPanel graphPanel)
+	{
+		currentFunction.fourierSeries = new FourierSeries(currentFunction.f, 2);
 		graphPanel.drawFunction(currentFunction, (int)componentSelector.getValue());
 		spectrogrmPanel.setFourierSeries(currentFunction.fourierSeries);
 		spectrogrmPanel.paintGraph((int)componentSelector.getValue());

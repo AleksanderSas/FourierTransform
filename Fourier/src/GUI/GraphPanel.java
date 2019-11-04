@@ -35,8 +35,6 @@ public class GraphPanel extends JPanel implements MouseListener, MouseMotionList
 	public GraphPanel(FunctionEncapsulator encapsulator)
 	{
 		this.encapsulator = encapsulator;
-		//this.fourierSeries = fourierSeries;
-		//this.f = f;
 		nockPoints = new ArrayList<>();
 		addMouseListener(this);
 		addMouseMotionListener(this);
